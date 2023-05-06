@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 public class Quiz extends AppCompatActivity implements View.OnClickListener{
     CountDownTimer countDownTimer;
-    long millisUntilFinished;
+    long millisUntilFinished=10000;
     TextView tvTimer;
 
 
@@ -48,35 +48,11 @@ public class Quiz extends AppCompatActivity implements View.OnClickListener{
         submitBtn.setOnClickListener(this);
 
         totalQuestionsTextView.setText("Total questions : "+totalQuestion);
-        // Initialize millisUntilFinished with 10 seconds.
-        millisUntilFinished = 10000;
-
-        countDownTimer = new CountDownTimer(millisUntilFinished, 1000) {
-            // In our case, onTick() callback method is fired on regular intervals of
-            // 1000 milliseconds or 1 second and onFinish() callback method is fired
-            // when the timer finishes.
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-                // Update tvTimer every 1 second to show the number of seconds remaining.
-
-                tvTimer.setText("" + (millisUntilFinished / 1000) + "s");
 
 
 
-            }
 
-            @Override
-            public void onFinish() {
-                loadNewQuestion();
-
-            }
-
-
-        };
-
-
-
+        loadNewQuestion();
 
 
 
@@ -92,6 +68,7 @@ public class Quiz extends AppCompatActivity implements View.OnClickListener{
 
         Button clickedButton = (Button) view;
         if(clickedButton.getId()==R.id.submit_btn){
+            countDownTimer.cancel();
             if(selectedAnswer.equals(QuestionAnswer.correctAnswers[currentQuestionIndex])){
                 score++;
             }
@@ -109,12 +86,31 @@ public class Quiz extends AppCompatActivity implements View.OnClickListener{
     }
 
     void loadNewQuestion() {
-
-
+        //countDownTimer.cancel();
+        //check if there's any questions left
         if (currentQuestionIndex == totalQuestion) {
             finishQuiz();
             return;
         }
+        countDownTimer = new CountDownTimer(millisUntilFinished, 1000) {
+            // In our case, onTick() callback method is fired on regular intervals of
+            // 1000 milliseconds or 1 second and onFinish() callback method is fired
+            // when the timer finishes.
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+                // Update tvTimer every 1 second to show the number of seconds remaining.
+                tvTimer.setText("" + (millisUntilFinished / 1000) + "s");
+
+            }
+            @Override
+            public void onFinish() {
+                currentQuestionIndex++;
+                loadNewQuestion();
+
+            }
+
+        }.start();
 
         questionTextView.setText(QuestionAnswer.question[currentQuestionIndex]);
         ansA.setText(QuestionAnswer.choices[currentQuestionIndex][0]);
@@ -122,29 +118,9 @@ public class Quiz extends AppCompatActivity implements View.OnClickListener{
         ansC.setText(QuestionAnswer.choices[currentQuestionIndex][2]);
         ansD.setText(QuestionAnswer.choices[currentQuestionIndex][3]);
 
-        // Initialize millisUntilFinished with 10 seconds.
-        millisUntilFinished = 10000;
-        countDownTimer = new CountDownTimer(millisUntilFinished, 1000) {
-            // In our case, onTick() callback method is fired on regular intervals of
-            // 1000 milliseconds or 1 second and onFinish() callback method is fired
-            // when the timer finishes.
-            @Override
-            public void onTick(long millisUntilFinished) {
-                System.out.println("hello2");
-                // Update tvTimer every 1 second to show the number of seconds remaining.
-                tvTimer.setText("" + (millisUntilFinished / 1000) + "s");
 
 
 
-            }
-
-            @Override
-            public void onFinish() {
-
-            }
-
-
-        };
     }
 
     void finishQuiz(){
